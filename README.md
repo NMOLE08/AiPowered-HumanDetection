@@ -24,14 +24,10 @@ same count to an Arduino Uno with a 16×2 I²C LCD.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    CAM[ESP32-CAM] --> STREAM[CameraStream]
-    STREAM --> YOLO[YOLO11n on laptop]
-    YOLO --> COUNT[Current person count]
-    COUNT --> DASH[Local web dashboard]
-    COUNT --> UNO[Arduino Uno]
-    UNO --> LCD[16×2 I²C LCD]
+```text
+ESP32-CAM → CameraStream → YOLO11n on laptop → Current person count
+                                                    ├─ Local web dashboard
+                                                    └─ Arduino Uno → 16×2 I²C LCD
 ```
 
 The full system, lifecycle, and data-flow diagrams are in
@@ -81,11 +77,9 @@ Use the Arduino Uno's port for `COM_PORT`, not a camera programming adapter.
 
 ## Hardware summary
 
-```mermaid
-flowchart LR
-    CAM[ESP32-CAM] -->|Local Wi-Fi video| PC[Laptop]
-    PC -->|USB serial| UNO[Arduino Uno]
-    UNO -->|I²C| LCD[16×2 LCD]
+```text
+ESP32-CAM ── local Wi-Fi video ──> Laptop
+Laptop ── USB serial ──> Arduino Uno ── I²C ──> 16×2 LCD
 ```
 
 The ESP32-CAM and Arduino do not need a direct data wire. See the complete

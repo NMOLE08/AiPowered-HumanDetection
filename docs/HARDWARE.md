@@ -10,12 +10,9 @@
 
 ## System wiring diagram
 
-```mermaid
-flowchart LR
-    POWER[Stable camera power] --> CAM[ESP32-CAM]
-    CAM -->|Local Wi-Fi video stream| LAPTOP[Laptop: Python + YOLO + dashboard]
-    LAPTOP -->|USB serial at 115200 baud| UNO[Arduino Uno]
-    UNO -->|I²C| LCD[16×2 LCD backpack]
+```text
+Stable camera power → ESP32-CAM ── local Wi-Fi video ──> Laptop: Python + YOLO + dashboard
+Laptop ── USB serial at 115200 baud ──> Arduino Uno ── I²C ──> 16×2 LCD backpack
 ```
 
 The ESP32-CAM and Arduino Uno have separate jobs and do not require a direct
@@ -31,12 +28,11 @@ human count to the Uno over USB.
 | SDA | A4 | I²C data |
 | SCL | A5 | I²C clock |
 
-```mermaid
-flowchart LR
-    UNO[Arduino Uno] -->|A4 / SDA| SDA[LCD SDA]
-    UNO -->|A5 / SCL| SCL[LCD SCL]
-    UNO -->|5V| VCC[LCD VCC]
-    UNO -->|GND| GND[LCD GND]
+```text
+Arduino Uno A4  ──> LCD SDA
+Arduino Uno A5  ──> LCD SCL
+Arduino Uno 5V  ──> LCD VCC
+Arduino Uno GND ──> LCD GND
 ```
 
 The supplied firmware uses `hd44780_I2Cexp`, which detects common I²C backpack

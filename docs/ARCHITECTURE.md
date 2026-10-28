@@ -3,19 +3,14 @@
 Sentinel Vision is a local, single-process computer-vision application. It
 performs inference on the laptop; the ESP32-CAM only captures and streams video.
 
-```mermaid
-flowchart TB
-    CAM[ESP32-CAM camera] -->|MJPEG over local Wi-Fi| STREAM[CameraStream]
-    STREAM -->|latest frame only| WORKER[Detection worker]
-    WORKER --> YOLO[YOLO11n model]
-    YOLO --> FILTER[Filter COCO person class 0]
-    FILTER --> COUNTER[PersonCounter]
-    COUNTER --> STATE[LiveState]
-    STATE --> API[FastAPI]
-    API --> WEB[Browser dashboard]
-    COUNTER --> SERIAL[LCDSerial]
-    SERIAL --> UNO[Arduino Uno]
-    UNO --> LCD[16×2 I²C LCD]
+```text
+ESP32-CAM camera
+  └─ MJPEG over local Wi-Fi → CameraStream → latest frame only
+                                      └─ Detection worker → YOLO11n model
+                                                               └─ filter COCO person class 0
+                                                                  └─ PersonCounter
+                                                                     ├─ LiveState → FastAPI → browser dashboard
+                                                                     └─ LCDSerial → Arduino Uno → 16×2 I²C LCD
 ```
 
 ## Single source of truth
@@ -33,17 +28,14 @@ This design prevents duplicate YOLO work and prevents a growing frame queue.
 
 ## Camera and inference lifecycle
 
-```mermaid
-stateDiagram-v2
-    [*] --> Connecting
-    Connecting --> Streaming: camera opens
-    Connecting --> Disconnected: opening fails
-    Streaming --> Detecting: newest frame available
-    Detecting --> Streaming: result published
-    Streaming --> Reconnecting: frame timeout
-    Reconnecting --> Streaming: camera recovers
-    Reconnecting --> Disconnected: retries exhausted
-    Disconnected --> [*]
+```text
+Connecting
+  ├─ camera opens → Streaming → newest frame → Detecting → result published → Streaming
+  └─ opening fails → Disconnected
+
+Streaming → frame timeout → Reconnecting
+Reconnecting → camera recovers → Streaming
+Reconnecting → retries exhausted → Disconnected
 ```
 
 `CameraStream` retains one decoded newest frame. If inference takes longer than
@@ -53,26 +45,16 @@ the dashboard does not turn that condition into a count of zero.
 
 ## Dashboard data flow
 
-```mermaid
-sequenceDiagram
-    participant C as ESP32-CAM
-    participant W as Detection worker
-    participant S as LiveState
-    participant A as FastAPI
-    participant B as Browser
-    participant L as Arduino LCD
-
-    C->>W: newest MJPEG frame
-    W->>W: YOLO11n and person count
-    W->>S: frame, detections, count, timing, status
-    W->>L: COUNT:n newline
-    B->>A: GET /api/status
-    A->>S: snapshot
-    S-->>A: current observed state
-    A-->>B: compact JSON
-    B->>A: GET /video_feed
-    A->>S: newest frame and detections
-    A-->>B: annotated multipart MJPEG
+```text
+ESP32-CAM → Detection worker: newest MJPEG frame
+Detection worker → Detection worker: YOLO11n and person count
+Detection worker → LiveState: frame, detections, count, timing, status
+Detection worker → Arduino LCD: COUNT:n followed by newline
+Browser → FastAPI: GET /api/status
+FastAPI → LiveState: current snapshot
+FastAPI → Browser: compact JSON
+Browser → FastAPI: GET /video_feed
+FastAPI → Browser: annotated multipart MJPEG from the latest shared frame
 ```
 
 ## Important boundaries
