@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F6F8">
+  <title>{{ title }} — Real-Time AI Human Detection</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Sentinel Vision">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M3 16s4.7-8 13-8 13 8 13 8-4.7 8-13 8S3 16 3 16Z" stroke="currentColor" stroke-width="2.4"/><circle cx="16" cy="16" r="4" stroke="currentColor" stroke-width="2.4"/></svg>
+        </span>
+        <span><strong>Sentinel Vision</strong><small>Real-Time AI Human Detection</small></span>
+      </div>
+      <nav class="top-nav" aria-label="Primary navigation"><span class="nav-current">Dashboard</span></nav>
+      <div class="header-status" data-status="connecting"><span class="status-dot"></span><span id="header-status-text">Connecting</span></div>
+    </header>
+
+    <section class="dashboard-grid">
+      <aside class="monitoring-panel" aria-label="Detection monitoring">
+        <section class="card count-card">
+          <div class="eyebrow">Live detection</div>
+          <h1>Humans detected</h1>
+          <div class="count-value" id="human-count" aria-live="polite">—</div>
+          <p id="count-detail">Waiting for a valid detection result</p>
+        </section>
+
+        <section class="card">
+          <div class="section-heading"><div><div class="eyebrow">System health</div><h2>Connection status</h2></div></div>
+          <div class="status-list">
+            <div class="status-row"><span class="status-icon camera-icon" aria-hidden="true"></span><span>ESP32-CAM</span><span class="status-pill" id="camera-status" data-status="connecting">Connecting</span></div>
+            <div class="status-row"><span class="status-icon ai-icon" aria-hidden="true"></span><span>YOLO inference</span><span class="status-pill" id="model-status" data-status="initializing">Initializing</span></div>
+            <div class="status-row"><span class="status-icon serial-icon" aria-hidden="true"></span><span>Arduino serial</span><span class="status-pill" id="arduino-status" data-status="not_configured">Not configured</span></div>
+          </div>
+        </section>
+
+        <section class="card metrics-card">
+          <div class="section-heading"><div><div class="eyebrow">Processing</div><h2>AI metrics</h2></div></div>
+          <dl class="metrics-grid">
+            <div><dt>Inference FPS</dt><dd id="fps-value">—</dd></div>
+            <div><dt>Inference time</dt><dd id="inference-value">—</dd></div>
+            <div><dt>Model</dt><dd id="model-name">YOLO11n</dd></div>
+            <div><dt>Source</dt><dd id="resolution-value">Awaiting frame</dd></div>
+          </dl>
+          <p class="last-update" id="last-update">No successful detection yet</p>
+        </section>
+
+        <section class="card activity-card">
+          <div class="section-heading"><div><div class="eyebrow">Current session</div><h2>Recent activity</h2></div><span class="activity-count" id="activity-count">0</span></div>
+          <ol id="activity-feed" class="activity-feed" aria-live="polite">
+            <li class="activity-empty">Waiting for the detection worker.</li>
+          </ol>
+        </section>
+      </aside>
+
+      <section class="video-card" aria-label="Live annotated camera stream">
+        <div class="video-header">
+          <div><span class="camera-name">CAM 01</span><span class="video-divider">/</span><span id="video-resolution">Awaiting stream</span></div>
+          <div class="live-badge" id="live-badge" data-status="connecting"><span class="status-dot"></span><span>Connecting</span></div>
+        </div>
+        <div class="video-stage" id="video-stage">
+          <img id="video-feed" alt="Live annotated ESP32-CAM feed">
+          <div class="video-placeholder" id="video-placeholder">
+            <span class="loading-ring" aria-hidden="true"></span>
+            <strong id="video-state-title">Connecting to CAM 01</strong>
+            <p id="video-state-detail">Waiting for the first annotated frame.</p>
+          </div>
+          <div class="video-controls" aria-label="Video controls">
+            <button type="button" class="control-button is-active" id="boxes-toggle" aria-pressed="true">Boxes</button>
+            <button type="button" class="control-button is-active" id="labels-toggle" aria-pressed="true">Labels</button>
+            <button type="button" class="control-button fullscreen-button" id="fullscreen-toggle" aria-label="Toggle fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Fullscreen</span>
+            </button>
+          </div>
+        </div>
+        <div class="video-footer"><span id="source-text">Camera source unavailable</span><span id="error-text"></span></div>
+      </section>
+    </section>
+  </main>
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

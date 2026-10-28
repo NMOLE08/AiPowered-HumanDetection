@@ -1,0 +1,27 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local configuration and pretrained model weights
+.env
+implementationplan.txt
+*.pt
+*.onnx
+
+# Generated media and reports
+outputs/
+runs/
+*.avi
+*.mp4
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
